@@ -1,5 +1,4 @@
-﻿using System.Numerics;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,17 +6,21 @@ using Microsoft.MixedReality.Toolkit.Input;
 
 public class Spawner : MonoBehaviour, IMixedRealityPointerHandler, IMixedRealityFocusHandler
 {
-    float spawnDistance = 30;
+    float spawnDistance = 10;
     int maxShots = 3;
     public GameObject shot;
-    float shotSpeed = 3;
-    Vector2 shotOffset = new Vector2(0.1f, 1f); 
+    Vector2 shotOffset = new Vector2(0.1f, 1f);
     float shotTimer;
+    List<GameObject> shots = new List<GameObject>();
+    public int hits = 0;
+    public int destroyed;
 
     // Start is called before the first frame update
     void Start()
     {
         shotTimer = UnityEngine.Random.Range(shotOffset.x, shotOffset.y);
+        hits = 0;
+        destroyed = 0;
     }
 
     // Update is called once per frame
@@ -28,8 +31,9 @@ public class Spawner : MonoBehaviour, IMixedRealityPointerHandler, IMixedReality
         {
             GameObject newObj = Instantiate(shot);
             newObj.transform.position = GetRandomPosFromCenter();
+            shots.Add(newObj);
 
-            shotTimer = UnityEngine.Random.Range(shotOffset.x, shotOffset.y);  
+            shotTimer = UnityEngine.Random.Range(shotOffset.x, shotOffset.y);
         }
     }
 
@@ -38,9 +42,9 @@ public class Spawner : MonoBehaviour, IMixedRealityPointerHandler, IMixedReality
         // x2 + y2 + z2 = c2
         // c2 = 30(2)
         float randX = UnityEngine.Random.Range(0f, spawnDistance);
-        float randY = Math.Pow(spawnDistance, 2) - Math.Pow(randX, 2);
+        float randZ = (float)Math.Pow(Math.Pow(spawnDistance, 2) - Math.Pow(randX, 2), 0.5f);
 
-        return new Vector3(randX, randY, 0);
+        return new Vector3(randX, 0, randZ);
     }
 
     public void OnFocusEnter(FocusEventData eventData)
